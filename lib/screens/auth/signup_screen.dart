@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_mart/consts/validator.dart';
+import 'package:shop_mart/root_screen.dart';
+import 'package:shop_mart/screens/auth/login_screen.dart';
+import 'package:shop_mart/services/app_function.dart';
+import 'package:shop_mart/services/auth/auth_service.dart';
 import 'package:shop_mart/widgets/app_name_text.dart';
 import 'package:shop_mart/widgets/auth/image_picker.dart';
 import 'package:shop_mart/widgets/subtitle_text.dart';
 import 'package:shop_mart/widgets/title_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,9 +25,13 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool obscureText = true;
   String passwordEntered = "";
+  String repeatPasswordEntered = "";
+
   String nameEntered = "";
   String emailEntered = "";
   XFile? imageUploaded;
+  bool isLoading = false;
+  final auth = FirebaseAuth.instance;
 
   // late final TextEditingController _passwordController;
 
@@ -71,18 +83,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> handleRegister() async {
-    if (_formkey.currentState!.validate()) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Processing Data')),
-      // );
+    bool isValid = _formkey.currentState!.validate();
+    if (imageUploaded == null) {
+      MyAppFunctions.showErrorOrWarningDialog(
+          context: context,
+          subtitle: 'Choose your avatar',
+          fct: () {},
+          isError: true);
+      return;
+    }
+    FocusScope.of(context).unfocus();
 
-      FocusScope.of(context).unfocus();
+    if (isValid) {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+
+        await AuthService.signUp(auth, emailEntered, passwordEntered);
+
+        setState(() {
+          isLoading = false;
+        });
+
+        await Fluttertoast.showToast(
+          msg: "Sign up successfully",
+          textColor: Colors.white,
+        );
+
+        if (!mounted) return;
+        await Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (ctx) => const RootScreen()));
+      } catch (e) {
+        await MyAppFunctions.showErrorOrWarningDialog(
+            context: context,
+            subtitle: e.toString(),
+            fct: () {},
+            isError: true);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    // if (isLoading) {
+    //   showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         return AlertDialog(
+    //           shape: RoundedRectangleBorder(
+    //               borderRadius: BorderRadius.circular(16.0)),
+    //           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    //           content: Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             children: [
+    //               Center(
+    //                 child: LoadingAnimationWidget.inkDrop(
+    //                   color: const Color(0xFF1A1A3F),
+    //                   size: 200,
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         );
+    //       });
+    // }
 
     return GestureDetector(
       onTap: () {
@@ -156,6 +223,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           nameEntered = value!;
                           FocusScope.of(context).requestFocus(_emailFocusNode);
                         },
+                        onChanged: (value) {
+                          setState(() {
+                            nameEntered = value;
+                          });
+                        },
                         validator: (value) {
                           return MyValidators.displayNamevalidator(value);
                         },
@@ -178,6 +250,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           emailEntered = value!;
                           FocusScope.of(context)
                               .requestFocus(_passwordFocusNode);
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            emailEntered = value;
+                          });
                         },
                         validator: (value) {
                           return MyValidators.emailValidator(value);
@@ -215,6 +292,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onSaved: (value) {
                           passwordEntered = value!;
                         },
+                        onChanged: (value) => setState(() {
+                          passwordEntered = value;
+                        }),
                         validator: (value) {
                           return MyValidators.passwordValidator(value);
                         },
@@ -228,6 +308,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         textInputAction: TextInputAction.done,
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: obscureText,
+
                         decoration: InputDecoration(
                           hintText: "Repeat password",
                           prefixIcon: const Icon(
@@ -246,9 +327,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                        // onSaved: (value) async {
-                        //   await _registerFCT();
-                        // },
+                        onSaved: (value) {
+                          repeatPasswordEntered = value!;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            repeatPasswordEntered = value;
+                          });
+                        },
                         validator: (value) {
                           return MyValidators.repeatPasswordValidator(
                             value: value,
