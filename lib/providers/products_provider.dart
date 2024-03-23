@@ -1,12 +1,44 @@
-import 'package:riverpod/riverpod.dart';
-
-import 'package:shop_mart/models/product.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-class ProductNotifier extends StateNotifier<List<ProductModel>> {
-  ProductNotifier() : super([]);
+import '../models/product_model.dart';
 
-  List<ProductModel> productsStatic = [
+class ProductsProvider with ChangeNotifier {
+  List<ProductModel> get getProducts {
+    return products;
+  }
+
+  ProductModel? findByProdId(String productId) {
+    if (products.where((element) => element.productId == productId).isEmpty) {
+      return null;
+    }
+    return products.firstWhere((element) => element.productId == productId);
+  }
+
+  List<ProductModel> findByCategory({required String categoryName}) {
+    List<ProductModel> categoryList = products
+        .where(
+          (element) => element.productCategory.toLowerCase().contains(
+                categoryName.toLowerCase(),
+              ),
+        )
+        .toList();
+    return categoryList;
+  }
+
+  List<ProductModel> searchQuery(
+      {required String searchText, required List<ProductModel> passedList}) {
+    List<ProductModel> searchList = passedList
+        .where(
+          (element) => element.productTitle.toLowerCase().contains(
+                searchText.toLowerCase(),
+              ),
+        )
+        .toList();
+    return searchList;
+  }
+
+  List<ProductModel> products = [
     // Phones
     ProductModel(
       //1
@@ -429,42 +461,4 @@ class ProductNotifier extends StateNotifier<List<ProductModel>> {
       productQuantity: "383",
     ),
   ];
-
-  List<ProductModel> get products {
-    return productsStatic;
-  }
-
-  ProductModel? findProductById(String id) {
-    if (products
-        .where((ProductModel product) => product.productId == id)
-        .isEmpty) {
-      return null;
-    }
-
-    return products
-        .firstWhere((ProductModel product) => product.productId == id);
-  }
-
-  List<ProductModel> findProdctsByCategory(String category) {
-    return products
-        .where((ProductModel product) => product.productCategory
-            .toLowerCase()
-            .contains(category.toLowerCase()))
-        .toList();
-  }
-
-  List<ProductModel> searchProduct(String search , List<ProductModel> productsToSearch) {
-    return productsToSearch
-        .where(
-          (ProductModel product) => product.productTitle.toLowerCase().contains(
-                search.toLowerCase(),
-              ),
-        )
-        .toList();
-  }
 }
-
-final productsProvider =
-    StateNotifierProvider<ProductNotifier, List<ProductModel>>((ref) {
-  return ProductNotifier();
-});

@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shop_mart/models/cart.dart';
-import 'package:shop_mart/providers/carts_provider.dart';
-import 'package:shop_mart/screens/carts/cart_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_mart/providers/cart_provider.dart';
+import 'package:shop_mart/screens/cart/cart_screen.dart';
 import 'package:shop_mart/screens/home_screen.dart';
 import 'package:shop_mart/screens/profile_screen.dart';
 import 'package:shop_mart/screens/search_screen.dart';
 
-class RootScreen extends ConsumerStatefulWidget {
+class RootScreen extends StatefulWidget {
+  static const routeName = '/RootScreen';
   const RootScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _RootScreenState createState() => _RootScreenState();
+  State<RootScreen> createState() => _RootScreenState();
 }
 
-class _RootScreenState extends ConsumerState<RootScreen> {
+class _RootScreenState extends State<RootScreen> {
   late List<Widget> screens;
-  int currentIndex = 3;
+  int currentScreen = 0;
   late PageController controller;
-
   @override
   void initState() {
     super.initState();
@@ -28,15 +26,14 @@ class _RootScreenState extends ConsumerState<RootScreen> {
       HomeScreen(),
       SearchScreen(),
       CartScreen(),
-      ProfileScreen()
+      ProfileScreen(),
     ];
-    controller = PageController(initialPage: currentIndex);
+    controller = PageController(initialPage: currentScreen);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<CartsModel> carts = ref.watch(cartsProvider);
-
+    final cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -44,33 +41,42 @@ class _RootScreenState extends ConsumerState<RootScreen> {
         children: screens,
       ),
       bottomNavigationBar: NavigationBar(
+        selectedIndex: currentScreen,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 10,
-        height: kBottomNavigationBarHeight + 10,
-        selectedIndex: currentIndex,
+        height: kBottomNavigationBarHeight,
         onDestinationSelected: (index) {
           setState(() {
-            currentIndex = index;
+            currentScreen = index;
           });
-          controller.jumpToPage(currentIndex);
+          controller.jumpToPage(currentScreen);
         },
         destinations: [
           const NavigationDestination(
-              icon: Icon(IconlyLight.home), label: "Home"),
+            selectedIcon: Icon(IconlyBold.home),
+            icon: Icon(IconlyLight.home),
+            label: "Home",
+          ),
           const NavigationDestination(
-              icon: Icon(IconlyLight.search), label: "Search"),
+            selectedIcon: Icon(IconlyBold.search),
+            icon: Icon(IconlyLight.search),
+            label: "Search",
+          ),
           NavigationDestination(
-              icon: Badge(
-                backgroundColor: Colors.blue,
-                textColor: Colors.white,
-                label: Text('${carts.length}'),
-                child: const Icon(
-                  IconlyLight.bag2,
-                ),
-              ),
-              label: "Cart"),
+            selectedIcon: const Icon(IconlyBold.bag2),
+            icon: Badge(
+              backgroundColor: Colors.blue,
+              textColor: Colors.white,
+              label: Text(cartProvider.getCartitems.length.toString()),
+              child: const Icon(IconlyLight.bag2),
+            ),
+            label: "Cart",
+          ),
           const NavigationDestination(
-              icon: Icon(IconlyLight.profile), label: "Profile"),
+            selectedIcon: Icon(IconlyBold.profile),
+            icon: Icon(IconlyLight.profile),
+            label: "Profile",
+          ),
         ],
       ),
     );

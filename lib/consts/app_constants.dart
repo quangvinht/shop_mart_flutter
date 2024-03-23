@@ -1,6 +1,9 @@
-import 'package:shop_mart/models/category.dart';
+
+
+import 'package:shop_mart/models/categories_model.dart';
 
 import '../services/assets_manager.dart';
+
 
 class AppConstants {
   static const String imageUrl =

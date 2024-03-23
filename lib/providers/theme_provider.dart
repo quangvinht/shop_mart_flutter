@@ -1,29 +1,25 @@
-
-
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeNotifier extends StateNotifier<bool> {
-  ThemeNotifier() : super(false) {
-    _loadThemeStatus();
-  }
-
+class ThemeProvider with ChangeNotifier {
   static const THEME_STATUS = "THEME_STATUS";
+  bool _darkTheme = false;
+  bool get getIsDarkTheme => _darkTheme;
 
-  Future<void> _loadThemeStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isDarkTheme = prefs.getBool(THEME_STATUS) ?? false;
-    state = isDarkTheme;
+  ThemeProvider() {
+    getTheme();
+  }
+  setDarkTheme({required bool themeValue}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(THEME_STATUS, themeValue);
+    _darkTheme = themeValue;
+    notifyListeners();
   }
 
-  Future<void> setDarkTheme(bool themeValue) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(THEME_STATUS, themeValue);
-    state = themeValue;
+  Future<bool> getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _darkTheme = prefs.getBool(THEME_STATUS) ?? false;
+    notifyListeners();
+    return _darkTheme;
   }
 }
-
-// Tạo một provider để truy cập ThemeNotifier
-final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) {
-  return ThemeNotifier();
-});

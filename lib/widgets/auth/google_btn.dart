@@ -1,35 +1,92 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:shop_mart/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_mart/providers/user_provider.dart';
 
-class GoogleBtn extends ConsumerWidget {
-  const GoogleBtn({super.key, required this.onTabGgBtn});
+import '../../root_screen.dart';
+import '../../services/my_app_functions.dart';
 
-  final void Function() onTabGgBtn;
+class GoogleButton extends StatelessWidget {
+  const GoogleButton({super.key});
+  Future<void> _googleSignSignIn({required BuildContext context}) async {
+    try {
+      final googleSignIn = GoogleSignIn();
+      final googleAccount = await googleSignIn.signIn();
+      if (googleAccount != null) {
+        final googleAuth = await googleAccount.authentication;
+        if (googleAuth.accessToken != null && googleAuth.idToken != null) {
+          final authResults = await FirebaseAuth.instance
+              .signInWithCredential(GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          ));
+          await Provider.of<UserProvider>(context, listen: false)
+              .fetchUserInfo();
+          print('áaa');
+          print(authResults);
+          // if (authResults.additionalUserInfo!.isNewUser) {
+          //   await FirebaseFirestore.instance
+          //       .collection("users")
+          //       .doc(
+          //         authResults.user!.uid,
+          //       )
+          //       .set({
+          //     'userId': authResults.user!.uid,
+          //     'userName': authResults.user!.displayName,
+          //     'userImage': authResults.user!.photoURL,
+          //     'userEmail': authResults.user!.email,
+          //     'createdAt': Timestamp.now(),
+          //     'userWish': [],
+          //     'userCart': [],
+          //   });
+          // }
+        }
+      }
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushReplacementNamed(context, RootScreen.routeName);
+      });
+    } on FirebaseException catch (error) {
+      await MyAppFunctions.showErrorOrWarningDialog(
+        context: context,
+        subtitle: error.message.toString(),
+        fct: () {},
+      );
+    } catch (error) {
+      await MyAppFunctions.showErrorOrWarningDialog(
+        context: context,
+        subtitle: error.toString(),
+        fct: () {},
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkTheme = ref.watch(themeProvider);
+  Widget build(BuildContext context) {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(12),
-        //backgroundColor: Colors.red,
+        elevation: 1,
+        padding: const EdgeInsets.all(12.0),
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(
+            12.0,
+          ),
         ),
       ),
-      onPressed: onTabGgBtn,
-      icon: const Icon(Ionicons.logo_google, color: Colors.red),
-      label: isDarkTheme
-          ? const Text(
-              'Signin with Google',
-            )
-          : const Text(
-              'Signin with Google',
-              style: TextStyle(color: Colors.black),
-            ),
+      icon: const Icon(
+        Ionicons.logo_google,
+        color: Colors.red,
+      ),
+      label: const Text(
+        "Sign in with google",
+        style: TextStyle(color: Colors.black),
+      ),
+      onPressed: () async {
+        await _googleSignSignIn(context: context);
+      },
     );
   }
 }

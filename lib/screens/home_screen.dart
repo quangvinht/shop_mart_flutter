@@ -1,111 +1,95 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_mart/consts/app_constants.dart';
-import 'package:shop_mart/models/category.dart';
-import 'package:shop_mart/models/product.dart';
-import 'package:shop_mart/providers/products_provider.dart';
-import 'package:shop_mart/services/assets_manager.dart';
-import 'package:shop_mart/widgets/app_name_text.dart';
-import 'package:shop_mart/widgets/products/category_rounded.dart';
-import 'package:shop_mart/widgets/products/lastest_arrival.dart';
-import 'package:shop_mart/widgets/title_text.dart';
+import 'package:shop_mart/widgets/products/ctg_rounded_widget.dart';
+import 'package:shop_mart/widgets/products/latest_arrival.dart';
 
-class HomeScreen extends ConsumerWidget {
+import '../providers/products_provider.dart';
+import '../services/assets_manager.dart';
+import '../widgets/app_name_text.dart';
+import '../widgets/title_text.dart';
+
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
-    List<ProductModel> products = ref.watch(productsProvider.notifier).products;
-
-    Widget swipperBanner = SizedBox(
-      height: size.height * 0.3,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Swiper(
-          autoplay: true,
-          itemBuilder: (BuildContext context, int index) {
-            return Image.asset(
-              AppConstants.bannersImages[index],
-              fit: BoxFit.fill,
-            );
-          },
-          itemCount: AppConstants.bannersImages.length,
-          pagination: const SwiperPagination(
-              builder: DotSwiperPaginationBuilder(
-            color: Colors.white,
-            activeColor: Colors.red,
-          )),
-          //control: const SwiperControl(),
-        ),
-      ),
-    );
-
+    final productsProvider = Provider.of<ProductsProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        title: const AppNameText(
-          text: 'Shopping',
-          fontSize: 20,
-        ),
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset(AssetsManager.shoppingCart),
+          child: Image.asset(
+            AssetsManager.shoppingCart,
+          ),
         ),
+        title: const AppNameTextWidget(fontSize: 20),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
-              swipperBanner,
-              const SizedBox(
-                height: 24,
-              ),
-              const TitleText(label: 'Lastest arrival'),
               SizedBox(
-                height: size.height * 0.2,
-                child: ListView.builder(
-                    itemCount: products.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (ctx, index) {
-                      return LastestArrival(
-                        product: products[index],
+                height: size.height * 0.25,
+                child: ClipRRect(
+                  // borderRadius: BorderRadius.circular(50),
+                  child: Swiper(
+                    autoplay: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Image.asset(
+                        AppConstants.bannersImages[index],
+                        fit: BoxFit.fill,
                       );
-                    }),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              const TitleText(label: 'Categories'),
-              SizedBox(
-                height: size.height * 0.3,
-                child: GridView.count(
-                  crossAxisCount: 4,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8.0),
-                  children: AppConstants.categoriesList
-                      .map(
-                        (CategoriesModel category) => CategoryRounded(
-                          key: Key(category.id),
-                          image: category.image,
-                          name: category.name,
-                        ),
-                      )
-                      .toList(),
+                    },
+                    itemCount: AppConstants.bannersImages.length,
+                    pagination: const SwiperPagination(
+                      // alignment: Alignment.center,
+                      builder: DotSwiperPaginationBuilder(
+                          activeColor: Colors.red, color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 15.0,
+              ),
+              const TitlesTextWidget(label: "Latest arrival"),
+              const SizedBox(
+                height: 15.0,
+              ),
+              SizedBox(
+                height: size.height * 0.2,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return ChangeNotifierProvider.value(
+                          value: productsProvider.getProducts[index],
+                          child: const LatestArrivalProductsWidget());
+                    }),
+              ),
+              const TitlesTextWidget(label: "Categories"),
+              const SizedBox(
+                height: 15.0,
+              ),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 4,
+                children:
+                    List.generate(AppConstants.categoriesList.length, (index) {
+                  return CategoryRoundedWidget(
+                    image: AppConstants.categoriesList[index].image,
+                    name: AppConstants.categoriesList[index].name,
+                  );
+                }),
               ),
             ],
           ),

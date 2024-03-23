@@ -1,51 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shop_mart/models/product.dart';
-import 'package:shop_mart/providers/whislist_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_mart/providers/wishlist_provider.dart';
 
-class HeartBtn extends ConsumerStatefulWidget {
-  const HeartBtn({
+class HeartButtonWidget extends StatefulWidget {
+  const HeartButtonWidget({
     super.key,
-    this.bgColor = Colors.transparent,
+    this.bkgColor = Colors.transparent,
     this.size = 20,
-    required this.product,
+    required this.productId,
+    // this.isInWishlist = false,
   });
-
-  final Color bgColor;
+  final Color bkgColor;
   final double size;
-  final ProductModel product;
-
+  final String productId;
+  // final bool? isInWishlist;
   @override
-  _HeartBtnState createState() => _HeartBtnState();
+  State<HeartButtonWidget> createState() => _HeartButtonWidgetState();
 }
 
-class _HeartBtnState extends ConsumerState<HeartBtn> {
+class _HeartButtonWidgetState extends State<HeartButtonWidget> {
   @override
   Widget build(BuildContext context) {
-    bool isProductInWhisList = ref
-        .read(WhislistProvider.notifier)
-        .isProductInWhisList(ref, widget.product.productId);
+    final wishlistsProvider = Provider.of<WishlistProvider>(context);
 
     return Container(
       decoration: BoxDecoration(
-        color: widget.bgColor,
+        color: widget.bkgColor,
         shape: BoxShape.circle,
       ),
       child: IconButton(
-          style: IconButton.styleFrom(
-            elevation: 10,
-          ),
-          onPressed: () {
-            ref
-                .read(WhislistProvider.notifier)
-                .addOrRemoveProductWhislist(widget.product);
-          },
-          icon: Icon(
-            size: widget.size,
-            IconlyLight.heart,
-            color: isProductInWhisList ? Colors.red : Colors.white,
-          )),
+        style: IconButton.styleFrom(elevation: 10),
+        onPressed: () {
+          wishlistsProvider.addOrRemoveFromWishlist(
+            productId: widget.productId,
+          );
+        },
+        icon: Icon(
+          wishlistsProvider.isProdinWishlist(
+            productId: widget.productId,
+          )
+              ? IconlyBold.heart
+              : IconlyLight.heart,
+          size: widget.size,
+          color: wishlistsProvider.isProdinWishlist(
+            productId: widget.productId,
+          )
+              ? Colors.red
+              : Colors.grey,
+        ),
+      ),
     );
   }
 }

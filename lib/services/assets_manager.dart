@@ -41,8 +41,4 @@ class AssetsManager {
   static String cosmetics = "$categoriesImagesPath/cosmetics.png";
   static String shoes = "$categoriesImagesPath/shoes.png";
   static String pc = "$categoriesImagesPath/pc.png";
-
-// no-avatar:
-  static String noAvatar =
-      'https://genpartners.genvita.vn/Content/images/avatar.png';
 }
