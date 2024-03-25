@@ -86,8 +86,8 @@ class MyApp extends StatelessWidget {
                 theme: Styles.themeData(
                     isDarkTheme: themeProvider.getIsDarkTheme,
                     context: context),
-                //home: const LoginScreen(),
-                home: const RootScreen(),
+                home: const LoginScreen(),
+                //home: const RootScreen(),
                 routes: {
                   RootScreen.routeName: (context) => const RootScreen(),
                   ProductDetailsScreen.routName: (context) =>
