@@ -2,7 +2,6 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_mart/consts/app_constants.dart';
 import 'package:shop_mart/models/cart_model.dart';
 import 'package:shop_mart/screens/cart/quantity_btm_sheet.dart';
 import 'package:shop_mart/widgets/subtitle_text.dart';
@@ -57,9 +56,12 @@ class CartWidget extends StatelessWidget {
                               Column(
                                 children: [
                                   IconButton(
-                                    onPressed: () {
-                                      cartProvider.removeOneItem(
-                                        productId: getCurrProduct.productId,
+                                    onPressed: () async {
+                                      await cartProvider
+                                          .removeOneItemFirebaseCart(
+                                        cartModel.cartId,
+                                        cartModel.productId,
+                                        cartModel.quantity,
                                       );
                                     },
                                     icon: const Icon(

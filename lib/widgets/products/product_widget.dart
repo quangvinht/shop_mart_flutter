@@ -1,12 +1,11 @@
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_mart/models/product_model.dart';
 import 'package:shop_mart/screens/inner_screen/product_details.dart';
+import 'package:shop_mart/services/my_app_functions.dart';
 import 'package:shop_mart/widgets/subtitle_text.dart';
 import 'package:shop_mart/widgets/title_text.dart';
 
-import '../../consts/app_constants.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../providers/viewed_recently_provider.dart';
@@ -23,6 +22,8 @@ class ProductWidget extends StatefulWidget {
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
+  void handleAddCart() async {}
+
   @override
   Widget build(BuildContext context) {
     // final productModelProvider = Provider.of<ProductModel>(context);
@@ -30,7 +31,7 @@ class _ProductWidgetState extends State<ProductWidget> {
     final getCurrProduct = productsProvider.findByProdId(widget.productId);
     final cartProvider = Provider.of<CartProvider>(context);
     Size size = MediaQuery.of(context).size;
-    final viewedProdProvider = Provider.of<ViewedProdProvider>(context);
+    Provider.of<ViewedProdProvider>(context);
 
     return getCurrProduct == null
         ? const SizedBox.shrink()
@@ -38,8 +39,8 @@ class _ProductWidgetState extends State<ProductWidget> {
             padding: const EdgeInsets.all(0.0),
             child: GestureDetector(
               onTap: () async {
-                viewedProdProvider.addViewedProd(
-                    productId: getCurrProduct.productId);
+                await Provider.of<ViewedProdProvider>(context, listen: false)
+                    .addViewedProdFirebase(widget.productId);
                 await Navigator.pushNamed(
                   context,
                   ProductDetailsScreen.routName,
@@ -102,11 +103,27 @@ class _ProductWidgetState extends State<ProductWidget> {
                             color: Colors.lightBlue,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12.0),
-                              onTap: () {
-                                if (cartProvider.isProdinCart(
-                                    productId: getCurrProduct.productId)) {
-                                  return;
+                              onTap: () async {
+                                try {
+                                  await Provider.of<CartProvider>(context,
+                                          listen: false)
+                                      .addProductToFirebase(
+                                    context: context,
+                                    productId: widget.productId,
+                                    quantity: 1,
+                                  );
+                                } catch (e) {
+                                  if (cartProvider.isProdinCart(
+                                      productId: getCurrProduct.productId)) {
+                                    return;
+                                  }
+                                  await MyAppFunctions.showErrorOrWarningDialog(
+                                    context: context,
+                                    subtitle: e.toString(),
+                                    fct: () {},
+                                  );
                                 }
+
                                 cartProvider.addProductToCart(
                                     productId: getCurrProduct.productId);
                               },

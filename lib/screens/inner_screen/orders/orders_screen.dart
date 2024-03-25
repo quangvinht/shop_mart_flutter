@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_mart/providers/order_provider.dart';
 import '../../../../widgets/empty_bag.dart';
 import '../../../services/assets_manager.dart';
 import '../../../widgets/title_text.dart';
@@ -7,7 +9,7 @@ import 'orders_widget.dart';
 class OrdersScreenFree extends StatefulWidget {
   static const routeName = '/OrderScreen';
 
-  const OrdersScreenFree({Key? key}) : super(key: key);
+  const OrdersScreenFree({super.key});
 
   @override
   State<OrdersScreenFree> createState() => _OrdersScreenFreeState();
@@ -15,26 +17,30 @@ class OrdersScreenFree extends StatefulWidget {
 
 class _OrdersScreenFreeState extends State<OrdersScreenFree> {
   bool isEmptyOrders = false;
+
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderProvider>(context, listen: true);
+
     return Scaffold(
         appBar: AppBar(
           title: const TitlesTextWidget(
             label: 'Placed orders',
           ),
         ),
-        body: isEmptyOrders
+        body: orderProvider.getOrders.isEmpty
             ? EmptyBagWidget(
                 imagePath: AssetsManager.orderBag,
                 title: "No orders has been placed yet",
                 subtitle: "",
                 buttonText: "Shop now")
             : ListView.separated(
-                itemCount: 15,
+                itemCount: orderProvider.getOrders.length,
                 itemBuilder: (ctx, index) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 6),
-                    child: OrdersWidgetFree(),
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+                    child: OrdersWidgetFree(order: orderProvider.orders[index]),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {

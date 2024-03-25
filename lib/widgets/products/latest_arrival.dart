@@ -2,11 +2,10 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_mart/providers/viewed_recently_provider.dart';
+import 'package:shop_mart/services/my_app_functions.dart';
 
-import '../../consts/app_constants.dart';
 import '../../models/product_model.dart';
 import '../../providers/cart_provider.dart';
-import '../../providers/wishlist_provider.dart';
 import '../../screens/inner_screen/product_details.dart';
 import '../subtitle_text.dart';
 import 'heart_btn.dart';
@@ -20,12 +19,14 @@ class LatestArrivalProductsWidget extends StatelessWidget {
     final productsModel = Provider.of<ProductModel>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
-    final viewedProdProvider = Provider.of<ViewedProdProvider>(context);
+    Provider.of<ViewedProdProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () async {
-          viewedProdProvider.addViewedProd(productId: productsModel.productId);
+          await Provider.of<ViewedProdProvider>(context, listen: false)
+              .addViewedProdFirebase(productsModel.productId);
+
           await Navigator.pushNamed(context, ProductDetailsScreen.routName,
               arguments: productsModel.productId);
         },
@@ -68,11 +69,27 @@ class LatestArrivalProductsWidget extends StatelessWidget {
                             productId: productsModel.productId,
                           ),
                           IconButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (cartProvider.isProdinCart(
                                   productId: productsModel.productId)) {
                                 return;
                               }
+                              try {
+                                await Provider.of<CartProvider>(context,
+                                        listen: false)
+                                    .addProductToFirebase(
+                                  context: context,
+                                  productId: productsModel.productId,
+                                  quantity: 1,
+                                );
+                              } catch (e) {
+                                await MyAppFunctions.showErrorOrWarningDialog(
+                                  context: context,
+                                  subtitle: e.toString(),
+                                  fct: () {},
+                                );
+                              }
+
                               cartProvider.addProductToCart(
                                   productId: productsModel.productId);
                             },

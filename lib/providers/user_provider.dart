@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_mart/models/user_model.dart';
 import 'package:shop_mart/services/user_service.dart';
@@ -21,12 +20,12 @@ class UserProvider with ChangeNotifier {
     try {
       final userDoc =
           await FirebaseFirestore.instance.collection("users").doc(uid).get();
-      print(userDoc.get('name'));
+
       final userDocDict = userDoc.data();
       userModel = await UserService.getUser(uid);
       notifyListeners();
       return userModel;
-    } on FirebaseException catch (error) {
+    } on FirebaseException {
       rethrow;
     } catch (error) {
       rethrow;

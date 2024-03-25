@@ -7,13 +7,11 @@ import 'package:shop_mart/root_screen.dart';
 import 'package:shop_mart/screens/auth/forgot_password.dart';
 import 'package:shop_mart/screens/auth/register.dart';
 import 'package:shop_mart/screens/loading_manager.dart';
-import 'package:shop_mart/services/auth_service.dart';
 import 'package:shop_mart/widgets/app_name_text.dart';
 import 'package:shop_mart/widgets/subtitle_text.dart';
 import 'package:shop_mart/widgets/title_text.dart';
 
 import '../../services/my_app_functions.dart';
-import '../../widgets/auth/google_btn.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/LoginScreen';

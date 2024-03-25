@@ -8,4 +8,11 @@ class ViewedProdModel with ChangeNotifier {
     required this.viewedProdId,
     required this.productId,
   });
+
+  factory ViewedProdModel.fromMap(Map<String, dynamic> map) {
+    return ViewedProdModel(
+      viewedProdId: map['id'] ?? '',
+      productId: map['productId'] ?? '',
+    );
+  }
 }

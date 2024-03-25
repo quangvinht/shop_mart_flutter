@@ -7,7 +7,9 @@ import '../../providers/cart_provider.dart';
 import '../../providers/products_provider.dart';
 
 class CartBottomSheetWidget extends StatelessWidget {
-  const CartBottomSheetWidget({super.key});
+  const CartBottomSheetWidget({super.key, required this.onCreateOrder});
+
+  final Function() onCreateOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,9 @@ class CartBottomSheetWidget extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await onCreateOrder();
+                },
                 child: const Text("Checkout"),
               ),
             ],

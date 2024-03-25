@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_mart/firebase_options.dart';
+import 'package:shop_mart/providers/order_provider.dart';
 import 'package:shop_mart/providers/products_provider.dart';
 import 'package:shop_mart/providers/theme_provider.dart';
 import 'package:shop_mart/providers/user_provider.dart';
@@ -73,17 +74,20 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (_) {
                 return UserProvider();
               }),
+              ChangeNotifierProvider(create: (_) {
+                return OrderProvider();
+              }),
             ],
             child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
-                title: 'ShopSmart EN',
+                title: 'Shopping',
                 theme: Styles.themeData(
                     isDarkTheme: themeProvider.getIsDarkTheme,
                     context: context),
-                home: const LoginScreen(),
-                // home: const LoginScreen(),
+                //home: const LoginScreen(),
+                home: const RootScreen(),
                 routes: {
                   RootScreen.routeName: (context) => const RootScreen(),
                   ProductDetailsScreen.routName: (context) =>

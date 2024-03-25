@@ -7,9 +7,9 @@ import 'package:shop_mart/screens/inner_screen/viewed_recently.dart';
 import 'package:shop_mart/screens/inner_screen/wishlist.dart';
 import 'package:shop_mart/screens/loading_manager.dart';
 import 'package:shop_mart/services/assets_manager.dart';
+import 'package:shop_mart/services/auth_service.dart';
 import 'package:shop_mart/widgets/subtitle_text.dart';
 
-import '../models/user_model.dart';
 import '../providers/theme_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/my_app_functions.dart';
@@ -27,31 +27,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   User? user = FirebaseAuth.instance.currentUser;
-  UserModel? userModel;
-  bool _isLoading = true;
-  Future<void> fetchUserInfo() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    try {
-      setState(() async {
-        _isLoading = true;
-        await userProvider.fetchUserInfo();
-      });
-    } catch (error) {
-      await MyAppFunctions.showErrorOrWarningDialog(
-        context: context,
-        subtitle: error.toString(),
-        fct: () {},
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
-    fetchUserInfo();
     super.initState();
   }
 
@@ -72,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const AppNameTextWidget(fontSize: 20),
       ),
       body: LoadingManager(
-        isLoading: _isLoading,
+        isLoading: currentUser == null ? true : false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -106,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   width: 3),
                               image: DecorationImage(
                                 image: NetworkImage(
-                                  currentUser!.userImage,
+                                  currentUser.userImage,
                                 ),
                                 fit: BoxFit.fill,
                               ),
@@ -118,11 +96,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TitlesTextWidget(label: currentUser!.userName),
+                              TitlesTextWidget(label: currentUser.userName),
                               const SizedBox(
                                 height: 6,
                               ),
-                              SubtitleTextWidget(label: currentUser!.userEmail)
+                              SubtitleTextWidget(label: currentUser.userEmail)
                             ],
                           )
                         ],
@@ -222,6 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icon(user == null ? Icons.login : Icons.logout),
                   label: Text(user == null ? "Login" : "Logout"),
                   onPressed: () async {
+                    await AuthService.signOut();
                     if (user == null) {
                       Navigator.pushNamed(context, LoginScreen.routeName);
                     } else {

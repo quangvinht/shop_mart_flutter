@@ -1,9 +1,9 @@
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_mart/services/my_app_functions.dart';
 import 'package:shop_mart/widgets/title_text.dart';
 
-import '../../consts/app_constants.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../widgets/app_name_text.dart';
@@ -110,12 +110,29 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                       ),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if (cartProvider.isProdinCart(
                                           productId:
                                               getCurrProduct.productId)) {
                                         return;
                                       }
+                                      try {
+                                        await Provider.of<CartProvider>(context,
+                                                listen: false)
+                                            .addProductToFirebase(
+                                          context: context,
+                                          productId: getCurrProduct.productId,
+                                          quantity: 1,
+                                        );
+                                      } catch (e) {
+                                        await MyAppFunctions
+                                            .showErrorOrWarningDialog(
+                                          context: context,
+                                          subtitle: e.toString(),
+                                          fct: () {},
+                                        );
+                                      }
+
                                       cartProvider.addProductToCart(
                                           productId: getCurrProduct.productId);
                                     },

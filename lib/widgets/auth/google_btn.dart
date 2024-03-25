@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -25,8 +24,7 @@ class GoogleButton extends StatelessWidget {
           ));
           await Provider.of<UserProvider>(context, listen: false)
               .fetchUserInfo();
-          print('áaa');
-          print(authResults);
+
           // if (authResults.additionalUserInfo!.isNewUser) {
           //   await FirebaseFirestore.instance
           //       .collection("users")

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class UserModel with ChangeNotifier {
   final String userId, userName, userImage, userEmail;
   final Timestamp createdAt;
-  final List userCart, userWish;
+  final List userCart, userWish, userViewed;
   UserModel({
     required this.userId,
     required this.userName,
@@ -12,6 +12,7 @@ class UserModel with ChangeNotifier {
     required this.userEmail,
     required this.userCart,
     required this.userWish,
+    required this.userViewed,
     required this.createdAt,
   });
 }

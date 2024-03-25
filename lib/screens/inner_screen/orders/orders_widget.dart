@@ -1,12 +1,15 @@
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
-import '../../../consts/app_constants.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_mart/models/order_model.dart';
+import 'package:shop_mart/providers/order_provider.dart';
 import '../../../widgets/subtitle_text.dart';
 import '../../../widgets/title_text.dart';
 
 class OrdersWidgetFree extends StatefulWidget {
-  const OrdersWidgetFree({super.key});
+  const OrdersWidgetFree({super.key, required this.order});
 
+  final OrdersModel order;
   @override
   State<OrdersWidgetFree> createState() => _OrdersWidgetFreeState();
 }
@@ -25,7 +28,7 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
             child: FancyShimmerImage(
               height: size.width * 0.25,
               width: size.width * 0.25,
-              imageUrl: AppConstants.imageUrl,
+              imageUrl: widget.order.imageUrl,
             ),
           ),
           Flexible(
@@ -37,15 +40,19 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: TitlesTextWidget(
-                          label: 'productTitle',
+                          label: widget.order.productTitle,
                           maxLines: 2,
                           fontSize: 15,
                         ),
                       ),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Provider.of<OrderProvider>(context,
+                                    listen: false)
+                                .removeOrderFirebase(widget.order.orderId);
+                          },
                           icon: const Icon(
                             Icons.clear,
                             color: Colors.red,
@@ -53,15 +60,15 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
                           )),
                     ],
                   ),
-                  const Row(
+                  Row(
                     children: [
-                      TitlesTextWidget(
-                        label: 'Price:  ',
-                        fontSize: 15,
-                      ),
+                      // TitlesTextWidget(
+                      //   label: 'Price: ${widget.order.price} ',
+                      //   fontSize: 15,
+                      // ),
                       Flexible(
                         child: SubtitleTextWidget(
-                          label: "11.99 \$",
+                          label: "Price :${widget.order.totalPrice} \$",
                           fontSize: 15,
                           color: Colors.blue,
                         ),
@@ -71,8 +78,8 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
                   const SizedBox(
                     height: 5,
                   ),
-                  const SubtitleTextWidget(
-                    label: "Qty: 10",
+                  SubtitleTextWidget(
+                    label: "Qty: ${widget.order.quantity}",
                     fontSize: 15,
                   ),
                   const SizedBox(

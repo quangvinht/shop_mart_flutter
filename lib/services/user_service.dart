@@ -29,6 +29,8 @@ class UserService {
       userEmail: userDoc.get('email'),
       userCart: userDocDict!.containsKey("Cart") ? userDoc.get("Cart") : [],
       userWish: userDocDict.containsKey("Wish") ? userDoc.get("Wish") : [],
+      userViewed:
+          userDocDict.containsKey("Viewed") ? userDoc.get("Viewed") : [],
       createdAt: userDoc.get('createdAt'),
     );
   }

@@ -31,10 +31,9 @@ class _HeartButtonWidgetState extends State<HeartButtonWidget> {
       ),
       child: IconButton(
         style: IconButton.styleFrom(elevation: 10),
-        onPressed: () {
-          wishlistsProvider.addOrRemoveFromWishlist(
-            productId: widget.productId,
-          );
+        onPressed: () async {
+          await Provider.of<WishlistProvider>(context, listen: false)
+              .addOrRemoveFromWishlistFirebase(widget.productId);
         },
         icon: Icon(
           wishlistsProvider.isProdinWishlist(

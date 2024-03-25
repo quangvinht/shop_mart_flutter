@@ -10,4 +10,12 @@ class CartModel with ChangeNotifier {
     required this.productId,
     required this.quantity,
   });
+
+  factory CartModel.fromMap(Map<String, dynamic> map) {
+    return CartModel(
+      cartId: map['id'] ?? '',
+      productId: map['productId'] ?? '',
+      quantity: map['quantity'] as int? ?? 0,
+    );
+  }
 }

@@ -8,4 +8,11 @@ class WishlistModel with ChangeNotifier {
     required this.wishlistId,
     required this.productId,
   });
+
+  factory WishlistModel.fromMap(Map<String, dynamic> map) {
+    return WishlistModel(
+      wishlistId: map['id'] ?? '',
+      productId: map['productId'] ?? '',
+    );
+  }
 }

@@ -2,6 +2,7 @@ import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_mart/services/assets_manager.dart';
+import 'package:shop_mart/services/my_app_functions.dart';
 import 'package:shop_mart/widgets/empty_bag.dart';
 import 'package:shop_mart/widgets/title_text.dart';
 
@@ -40,14 +41,16 @@ class ViewedRecentlyScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () {
-                    //  MyAppFunctions.showErrorOrWarningDialog(
-                    //   isError: false,
-                    //   context: context,
-                    //   subtitle: "Clear cart?",
-                    //   fct: () {
-                    //   viewedProdProvider.clearLocalWishlist();
-                    //   },
-                    // );
+                    MyAppFunctions.showErrorOrWarningDialog(
+                      isError: false,
+                      context: context,
+                      subtitle: "Clear cart?",
+                      fct: () async {
+                        await Provider.of<ViewedProdProvider>(context,
+                                listen: false)
+                            .clearLocalViewedListFirebase();
+                      },
+                    );
                   },
                   icon: const Icon(
                     Icons.delete_forever_rounded,
