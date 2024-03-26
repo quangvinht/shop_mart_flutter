@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
 import 'package:shop_mart/services/viewed_recently_service.dart';
 
 import 'package:uuid/uuid.dart';
@@ -57,7 +58,9 @@ class ViewedProdProvider with ChangeNotifier {
           for (var viewed in viewedList) viewed.productId: viewed
         };
       }
-    } catch (e) {}
+    } catch (e) {
+ 
+    }
     notifyListeners();
   }
 
@@ -73,6 +76,8 @@ class ViewedProdProvider with ChangeNotifier {
 
       Fluttertoast.showToast(msg: "Item has been added");
     } catch (e) {
+ 
+
       rethrow;
     }
   }
@@ -85,6 +90,8 @@ class ViewedProdProvider with ChangeNotifier {
       await fetchViewed();
       Fluttertoast.showToast(msg: "Viewed have been cleared");
     } catch (e) {
+   
+
       print('clearWishlistFirebase : $e');
     }
     notifyListeners();

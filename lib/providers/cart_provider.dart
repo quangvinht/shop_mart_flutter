@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
 import 'package:shop_mart/models/cart_model.dart';
 import 'package:shop_mart/providers/products_provider.dart';
 import 'package:shop_mart/services/cart_service.dart';
@@ -91,7 +92,9 @@ class CartProvider with ChangeNotifier {
       } else {
         _cartItems = {for (var cart in carts) cart.productId: cart};
       }
-    } catch (e) {}
+    } catch (e) {
+    
+    }
     notifyListeners();
   }
 
@@ -120,6 +123,7 @@ class CartProvider with ChangeNotifier {
       await fetchCart();
       Fluttertoast.showToast(msg: "Item has been added");
     } catch (e) {
+     
       rethrow;
     }
   }
@@ -132,6 +136,7 @@ class CartProvider with ChangeNotifier {
       await fetchCart();
       Fluttertoast.showToast(msg: "Cart has been cleared");
     } catch (e) {
+     
       print('clearFirebaseCart : $e');
     }
     notifyListeners();
@@ -150,6 +155,7 @@ class CartProvider with ChangeNotifier {
       await fetchCart();
       Fluttertoast.showToast(msg: "Cart has been removed");
     } catch (e) {
+     
       print('removeOneItemFirebaseCart : $e');
     }
     notifyListeners();
@@ -172,6 +178,7 @@ class CartProvider with ChangeNotifier {
       await fetchCart();
       Fluttertoast.showToast(msg: "Cart's quantity has been updated");
     } catch (e) {
+     
       print('updateQtyFirebaseCart : $e');
     }
     notifyListeners();

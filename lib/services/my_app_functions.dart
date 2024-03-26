@@ -20,6 +20,7 @@ class MyAppFunctions {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             content: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   isError ? AssetsManager.error : AssetsManager.warning,
@@ -29,9 +30,11 @@ class MyAppFunctions {
                 const SizedBox(
                   height: 16.0,
                 ),
-                SubtitleTextWidget(
-                  label: subtitle,
-                  fontWeight: FontWeight.w600,
+                Center(
+                  child: SubtitleTextWidget(
+                    label: subtitle,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(
                   height: 16.0,

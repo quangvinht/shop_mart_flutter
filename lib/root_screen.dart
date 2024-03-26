@@ -11,6 +11,7 @@ import 'package:shop_mart/screens/cart/cart_screen.dart';
 import 'package:shop_mart/screens/home_screen.dart';
 import 'package:shop_mart/screens/profile_screen.dart';
 import 'package:shop_mart/screens/search_screen.dart';
+import 'package:shop_mart/services/notification_service.dart';
 
 class RootScreen extends StatefulWidget {
   static const routeName = '/RootScreen';
@@ -44,6 +45,7 @@ class _RootScreenState extends State<RootScreen> {
         Provider.of<UserProvider>(context, listen: false).fetchUserInfo(),
       });
       await Future.wait({
+        NotificationsFirebaseService.initNotifications(),
         Provider.of<OrderProvider>(context, listen: false).fetchOrders(),
         Provider.of<ProductsProvider>(context, listen: false).fetchproducts(),
         Provider.of<CartProvider>(context, listen: false).fetchCart(),

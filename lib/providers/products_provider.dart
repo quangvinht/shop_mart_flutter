@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
 import 'package:shop_mart/services/products_services.dart';
 
 import '../models/product_model.dart';
@@ -14,7 +15,9 @@ class ProductsProvider with ChangeNotifier {
     try {
       products = await ProductService.getProducts();
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+    
+    }
   }
 
   void listenToProductsStream() {

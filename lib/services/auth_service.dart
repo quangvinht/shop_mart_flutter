@@ -28,4 +28,8 @@ class AuthService {
     final auth = FirebaseAuth.instance;
     await auth.signOut();
   }
+
+  static Future<void> resetpassword(String email) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
 }

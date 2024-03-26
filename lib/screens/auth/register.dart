@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
 import 'package:shop_mart/consts/validator.dart';
 import 'package:shop_mart/screens/loading_manager.dart';
 import 'package:shop_mart/services/auth_service.dart';
@@ -96,11 +97,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (!mounted) return;
         await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (ctx) => const RootScreen()));
-      } on FirebaseException catch (error) {
-        await MyAppFunctions.showErrorOrWarningDialog(
+      } on FirebaseException catch (e) {
+        final String errorMessage = FirebaseError.handleException(e);
+
+        MyAppFunctions.showErrorOrWarningDialog(
           context: context,
-          subtitle: error.message.toString(),
+          subtitle: errorMessage,
           fct: () {},
+          isError: true,
         );
       } catch (error) {
         await MyAppFunctions.showErrorOrWarningDialog(

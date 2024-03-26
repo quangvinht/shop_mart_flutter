@@ -9,6 +9,7 @@ import 'package:shop_mart/providers/user_provider.dart';
 import 'package:shop_mart/root_screen.dart';
 import 'package:shop_mart/screens/inner_screen/product_details.dart';
 import 'package:shop_mart/screens/inner_screen/viewed_recently.dart';
+import 'package:shop_mart/services/notification_service.dart';
 
 import 'consts/theme_data.dart';
 import 'providers/cart_provider.dart';

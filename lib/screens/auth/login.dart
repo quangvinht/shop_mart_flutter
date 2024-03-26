@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
 import 'package:shop_mart/consts/validator.dart';
 import 'package:shop_mart/root_screen.dart';
 import 'package:shop_mart/screens/auth/forgot_password.dart';
@@ -74,11 +77,15 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, RootScreen.routeName);
-      } on FirebaseException catch (error) {
-        await MyAppFunctions.showErrorOrWarningDialog(
+      } on FirebaseException catch (e) {
+        print(e.code);
+        final String errorMessage = FirebaseError.handleException(e);
+
+        MyAppFunctions.showErrorOrWarningDialog(
           context: context,
-          subtitle: error.message.toString(),
+          subtitle: errorMessage,
           fct: () {},
+          isError: true,
         );
       } catch (error) {
         await MyAppFunctions.showErrorOrWarningDialog(

@@ -1,5 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:shop_mart/consts/firebase_error.dart';
+import 'package:shop_mart/screens/auth/reset_password.dart';
+import 'package:shop_mart/services/auth_service.dart';
+import 'package:shop_mart/services/my_app_functions.dart';
 import '../../consts/validator.dart';
 import '../../services/assets_manager.dart';
 import '../../widgets/app_name_text.dart';
@@ -35,7 +40,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _forgetPassFCT() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    if (isValid) {}
+    if (isValid) {
+      try {
+        await AuthService.resetpassword(_emailController.text.trim());
+
+        await Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (ctx) => ResetPassword(
+                      email: _emailController.text.trim(),
+                    )));
+      } on FirebaseAuthException catch (e) {
+        final String errorMessage = FirebaseError.handleException(e);
+
+        MyAppFunctions.showErrorOrWarningDialog(
+          context: context,
+          subtitle: errorMessage,
+          fct: () {},
+          isError: true,
+        );
+      }
+    }
   }
 
   @override
